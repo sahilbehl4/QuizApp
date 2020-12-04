@@ -9,9 +9,17 @@ import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        window = UIWindow(frame: UIScreen.main.bounds)
+        let vc = QuestionViewController(question: "Question 1", options: ["Option 1", "Option 2"], onSelection: {
+            print($0)
+        })
+        _ = vc.view
+        vc.tableView.allowsMultipleSelection = true
+        window?.rootViewController = vc
+        window?.makeKeyAndVisible()
         return true
     }
 

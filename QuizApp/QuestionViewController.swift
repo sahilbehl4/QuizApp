@@ -12,12 +12,12 @@ class QuestionViewController: UIViewController {
     private var question = ""
     private var options = [String]()
     private let reuseIdentifier = "Cell"
-    private var onSelection: ((String) -> Void)?
+    private var onSelection: (([String]) -> Void)?
 
     @IBOutlet weak var headerLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
-    convenience init(question: String, options: [String], onSelection: @escaping ((String) -> Void)) {
+    convenience init(question: String, options: [String], onSelection: @escaping (([String]) -> Void)) {
         self.init()
         self.question = question
         self.options = options
@@ -51,6 +51,16 @@ extension QuestionViewController: UITableViewDataSource {
 
 extension QuestionViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        onSelection?(options[indexPath.row])
+        onSelection?(selectedOptions(in: tableView))
+    }
+    
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        if tableView.allowsMultipleSelection {
+            onSelection?(selectedOptions(in: tableView))
+        }
+    }
+    
+    private func selectedOptions(in tableView: UITableView) -> [String] {
+        return tableView.indexPathsForSelectedRows?.compactMap { options[$0.row] } ?? []
     }
 }
