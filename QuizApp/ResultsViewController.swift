@@ -10,7 +10,7 @@ import UIKit
 struct PresentableAnswer {
     let question: String
     let answer: String
-    let isCorrect: Bool
+    let wrongAnswer: String?
 }
 
 class CorrectAnswerCell: UITableViewCell {
@@ -43,6 +43,12 @@ class WrongAnswerCell: UITableViewCell {
     }()
     
     lazy var correctAnswerLabel: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    lazy var wrongAnswerLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
         return label
@@ -87,8 +93,8 @@ class ResultsViewController: UIViewController {
     }
     
     private func design() {
-        tableView.register(CorrectAnswerCell.self, forCellReuseIdentifier: String(describing: CorrectAnswerCell.self))
-        tableView.register(WrongAnswerCell.self, forCellReuseIdentifier: String(describing: WrongAnswerCell.self))
+        tableView.register(CorrectAnswerCell.self)
+        tableView.register(WrongAnswerCell.self)
     }
 }
 
@@ -99,20 +105,32 @@ extension ResultsViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let answer = answers[indexPath.row]
-        return answer.isCorrect ? correctAnswerCell(for: answer) : wrongAnswerCell(for: answer)
+        return answer.wrongAnswer == nil ? correctAnswerCell(for: answer) : wrongAnswerCell(for: answer)
     }
     
     private func correctAnswerCell(for answer: PresentableAnswer) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: CorrectAnswerCell.self)) as? CorrectAnswerCell
+        let cell = tableView.deque(CorrectAnswerCell.self) as? CorrectAnswerCell
         cell?.questionLabel.text = answer.question
         cell?.answerLabel.text = answer.answer
         return cell ?? UITableViewCell()
     }
     
     private func wrongAnswerCell(for answer: PresentableAnswer) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: WrongAnswerCell.self)) as? WrongAnswerCell
+        let cell = tableView.deque(WrongAnswerCell.self) as? WrongAnswerCell
         cell?.questionLabel.text = answer.question
         cell?.correctAnswerLabel.text = answer.answer
+        cell?.wrongAnswerLabel.text = answer.wrongAnswer
         return cell ?? UITableViewCell()
+    }
+}
+
+extension UITableView {
+    func register(_ type: UITableViewCell.Type) {
+        let className = String(describing: type)
+        register(type, forCellReuseIdentifier: className)
+    }
+    
+    func deque(_ type: UITableViewCell.Type) -> UITableViewCell? {
+        return dequeueReusableCell(withIdentifier: String(describing: type))
     }
 }
