@@ -6,62 +6,7 @@
 //
 
 import UIKit
-
-struct PresentableAnswer {
-    let question: String
-    let answer: String
-    let wrongAnswer: String?
-}
-
-class CorrectAnswerCell: UITableViewCell {
-    lazy var questionLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    lazy var answerLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-}
-
-class WrongAnswerCell: UITableViewCell {
-    lazy var questionLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    lazy var correctAnswerLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    lazy var wrongAnswerLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-}
+import SnapKit
 
 class ResultsViewController: UIViewController {
     lazy var headerLabel: UILabel = {
@@ -74,6 +19,8 @@ class ResultsViewController: UIViewController {
         let tableView = UITableView()
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.estimatedRowHeight = 55
+        tableView.rowHeight = UITableView.automaticDimension
         return tableView
     }()
 
@@ -93,6 +40,16 @@ class ResultsViewController: UIViewController {
     }
     
     private func design() {
+        view.addSubview(tableView)
+        view.addSubview(headerLabel)
+        headerLabel.snp.makeConstraints {
+            $0.topMargin.equalTo(10)
+            $0.left.right.equalTo(30)
+        }
+        tableView.snp.makeConstraints {
+            $0.topMargin.equalTo(headerLabel.snp.bottomMargin)
+            $0.bottomMargin.leftMargin.rightMargin.equalTo(0)
+        }
         tableView.register(CorrectAnswerCell.self)
         tableView.register(WrongAnswerCell.self)
     }
@@ -121,16 +78,5 @@ extension ResultsViewController: UITableViewDelegate, UITableViewDataSource {
         cell?.correctAnswerLabel.text = answer.answer
         cell?.wrongAnswerLabel.text = answer.wrongAnswer
         return cell ?? UITableViewCell()
-    }
-}
-
-extension UITableView {
-    func register(_ type: UITableViewCell.Type) {
-        let className = String(describing: type)
-        register(type, forCellReuseIdentifier: className)
-    }
-    
-    func deque(_ type: UITableViewCell.Type) -> UITableViewCell? {
-        return dequeueReusableCell(withIdentifier: String(describing: type))
     }
 }

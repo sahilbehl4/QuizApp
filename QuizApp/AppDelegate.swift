@@ -13,12 +13,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
-        let vc = QuestionViewController(question: "Question 1", options: ["Option 1", "Option 2"], onSelection: {
-            print($0)
-        })
-        _ = vc.view
-        vc.tableView.allowsMultipleSelection = true
-        window?.rootViewController = vc
+        
+        let viewControoler = ResultsViewController(summary: "You have got 1/2 correct", answers: [
+            PresentableAnswer(question: "Question1", answer: "answer1", wrongAnswer: nil),
+            PresentableAnswer(question: "Question2", answer: "answer2", wrongAnswer: "not nil")
+        ])
+        window?.rootViewController = viewControoler
         window?.makeKeyAndVisible()
         return true
     }
